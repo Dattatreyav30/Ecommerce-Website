@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const User = require('./models/user')
 
 app.use((req, res, next) => {
-  User.findById('646099d19a52fca06a20a497')
+  User.findById('6460aa03734fc386ac2db4f3')
     .then(user => {
       req.user = user
       next();

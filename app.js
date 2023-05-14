@@ -18,26 +18,36 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// const User = require('./models/user')
+const User = require('./models/user')
 
-// app.use((req, res, next) => {
-//   User.findById('645b8a664ad8c7fd0cd64dc7')
-//     .then(user => {
-//       req.user = new User(user.name, user.email, user.cart, user._id);
-//       next();
-//     })
-//     .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+  User.findById('646099d19a52fca06a20a497')
+    .then(user => {
+      req.user = user
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoose.connect(process.env.MONGODBURL)  
-.then((result)=>{
-  app.listen(3000)
-})
-.catch((err)=>{
-  console.log(err)
-})
+mongoose.connect(process.env.MONGODBURL)
+  .then((result) => {
+    User.findOne().
+      then(user => {
+        if (!user) {
+          const user = new User({
+            name: 'datta',
+            email: 'datta@gmail.com'
+          })
+          user.save()
+        }
+      })
+    app.listen(3000)
+  })
+  .catch((err) => {  
+    console.log(err)
+  })

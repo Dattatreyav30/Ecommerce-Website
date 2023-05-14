@@ -16,7 +16,7 @@ const userSchema = new Schema({
     items: [
       {
         productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-        quantity: { type: Number , required: true }
+        quantity: { type: Number, required: true }
       }
     ]
   }
@@ -48,6 +48,15 @@ userSchema.methods.addToCart = function (product) {
 
   this.save()
 
+}
+
+userSchema.methods.deleteIteminCart = function (productId) {
+  const updatedCart = this.cart.items.filter(item => {
+    return item._id.toString() !== productId.toString();
+  })
+  console.log("upadated cart is "+updatedCart)
+  this.cart.items = updatedCart;
+  return this.save()
 }
 
 module.exports = mongoose.model('User', userSchema)

@@ -15,8 +15,13 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const userId = req.user._id
-  const product = new Product(title, price, description, imageUrl, null, userId)
+  // const userId = req.user._id
+  const product = new Product({
+    title: title,
+    imageUrl: imageUrl,
+    price: price,
+    description: description,
+  })
   product
     .save()
     .then(result => {
@@ -58,28 +63,21 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
-  const product = new Product(updatedTitle, updatedPrice, updatedDesc, updatedImageUrl, new mongodb.ObjectId(prodId))
-
-
-  product
-    .save()
+  Product.findByIdAndUpdate(prodId, {
+    title: updatedTitle,
+    price: updatedPrice,
+    imageUrl: updatedImageUrl,
+    description: updatedDesc
+  })
     .then(() => {
-      console.log('UPDATED PRODUCT:', product);
-      product.title = updatedTitle;
-      product.price = updatedPrice;
-      product.description = updatedDesc;
-      product.imageUrl = updatedImageUrl;
-      return product.save();
-    })
-    .then(() => {
-      console.log('UPDATED PRODUCT AGAIN:', product);
+      console.log('UPDATED PRODUCT AGAIN:');
       res.redirect('/admin/products');
     })
     .catch(err => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
       res.render('admin/products', {
         prods: products,
@@ -92,8 +90,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  console.log("productId" + prodId)
-  Product.findById(prodId, true)
+  Product.findByIdAndRemove(prodId)
     .then(product => {
       console.log(product)
     })
